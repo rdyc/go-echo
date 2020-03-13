@@ -60,9 +60,8 @@ func main() {
 	}))
 
 	// web router
-	e.File("/", "../../public/index.html")
-	//e.File("/favicon.ico", "../../public/assets/favicon/favicon.ico")
-	e.Static("/assets", "../../public/assets")
+	e.File("/", "../public/index.html")
+	e.Static("/assets", "../public/assets")
 
 	// api router group
 	v1 := e.Group("/v1")
