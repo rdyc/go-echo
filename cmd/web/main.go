@@ -66,5 +66,19 @@ func main() {
 	routers.UserRouter(v1, db)
 
 	// error handler on startup
-	e.Logger.Fatal(e.Start(":80"))
+	e.Logger.Fatal(e.Start(getPort()))
+}
+
+// getPort ...
+// The Port from the environment so we can run on Heroku
+func getPort() string {
+	var port = os.Getenv("PORT")
+	// Set a default port if there is nothing in the environment
+	if port == "" {
+		port = "4000"
+		fmt.Println("INFO: No PORT environment variable detected, defaulting to " + port)
+	} else {
+		fmt.Println("INFO: Heroku environment port detected to " + port)
+	}
+	return ":" + port
 }
