@@ -59,7 +59,12 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
-	// router group
+	// web router
+	e.File("/", "../../public/index.html")
+	//e.File("/favicon.ico", "../../public/assets/favicon/favicon.ico")
+	e.Static("/assets", "../../public/assets")
+
+	// api router group
 	v1 := e.Group("/v1")
 
 	// register routers with group
