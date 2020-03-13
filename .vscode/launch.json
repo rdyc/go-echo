@@ -10,8 +10,17 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/web/main.go",
-            "env": {},
-            "args": [],
+            "env": {
+                "PORT": 4000,
+                "DB_HOST": "localhost",
+                "DB_PORT": "5432",
+                "DB_USER": "appuser",
+                "DB_PASS": "P@ssw0rd!",
+                "DB_NAME": "IdentityServer4Admin"
+            },
+            "args": [
+                "-base-path=../../"
+            ],
             "showLog": false
         }
     ]
