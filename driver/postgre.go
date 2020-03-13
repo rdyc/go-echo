@@ -43,7 +43,7 @@ func ConnectSQL(host, port, uname, pass, dbname string) (*DB, error) {
 		panic(err)
 	}
 
-	fmt.Println("Successfully connected to PostgreSQL!")
+	fmt.Println("INFO: PostgreSQL connected to " + host)
 
 	return dbConn, err
 }
