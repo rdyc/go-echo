@@ -66,5 +66,5 @@ func main() {
 	routers.UserRouter(v1, db)
 
 	// error handler on startup
-	e.Logger.Fatal(e.Start(":4444"))
+	e.Logger.Fatal(e.Start(":80"))
 }
