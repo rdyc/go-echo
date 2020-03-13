@@ -42,7 +42,7 @@ func main() {
 		dbPass = pass
 	}
 
-	db, err := driver.ConnectSQL(host, port, user, pass, dbname)
+	db, err := driver.ConnectSQL(dbHost, dbPort, dbUser, dbPass, dbName)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
