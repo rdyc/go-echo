@@ -69,7 +69,8 @@ func (m *postgreUserRepo) GetByID(ctx context.Context, id uuid.UUID) (*models.Us
 }
 
 func (m *postgreUserRepo) Create(ctx context.Context, p *models.User) (uuid.UUID, error) {
-	query := `insert into "Users" values ($1, $2, $3)`
+	query := `insert into "Users" ("Id", "UserName", "Email", "EmailConfirmed", "PhoneNumberConfirmed", "TwoFactorEnabled", "LockoutEnabled", "AccessFailedCount") 
+				values ($1, $2, $3, false, false, false, false, 0)`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -83,7 +84,7 @@ func (m *postgreUserRepo) Create(ctx context.Context, p *models.User) (uuid.UUID
 		return p.Id, err
 	}
 
-	return uuid.Nil, nil
+	return p.Id, nil
 }
 
 func (m *postgreUserRepo) Update(ctx context.Context, p *models.User) (*models.User, error) {

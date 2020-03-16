@@ -64,3 +64,36 @@ func (u *UserHandler) AddUser(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, user)
 }
+
+// UpdateUser ...
+func (u *UserHandler) UpdateUser(c echo.Context) error {
+	id, _ := uuid.Parse(c.Param("id"))
+
+	payload := new(entities.User)
+	if err := c.Bind(payload); err != nil {
+		return err
+	}
+
+	payload.Id = id
+
+	user, err := u.repo.Update(c.Request().Context(), payload)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusAccepted, user)
+}
+
+// DeleteUser ...
+func (u *UserHandler) DeleteUser(c echo.Context) error {
+	id, _ := uuid.Parse(c.Param("id"))
+
+	_, err := u.repo.Delete(c.Request().Context(), id)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusAccepted, nil)
+}
