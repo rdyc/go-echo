@@ -3,8 +3,10 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo"
 	"github.com/rdyc/go-echo/driver"
+	"github.com/rdyc/go-echo/entities"
 	repository "github.com/rdyc/go-echo/repository"
 	user "github.com/rdyc/go-echo/repository/user"
 )
@@ -12,7 +14,7 @@ import (
 // NewUserHandler ...
 func NewUserHandler(db *driver.DB) *UserHandler {
 	return &UserHandler{
-		repo: user.NewSQLPostRepo(db.SQL),
+		repo: user.NewSQLUserRepo(db.SQL),
 	}
 }
 
@@ -25,21 +27,6 @@ type UserHandler struct {
 func (u *UserHandler) GetUserAll(c echo.Context) error {
 	users, err := u.repo.Fetch(c.Request().Context(), 10)
 
-	// users := []models.UserResponse{
-	// 	{
-	// 		Name:  "Dr. Bruce Banner",
-	// 		Email: "hulk@avenger.net",
-	// 	},
-	// 	{
-	// 		Name:  "Tony Stark",
-	// 		Email: "ironman@avenger.net",
-	// 	},
-	// 	{
-	// 		Name:  "Thor Odinson",
-	// 		Email: "thor@avenger.net",
-	// 	},
-	// }
-
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -47,21 +34,33 @@ func (u *UserHandler) GetUserAll(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-// // GetUserByID ...
-// func (u *UserHandler) GetUserByID(c echo.Context) error {
-// 	id := c.Param("id")
+// GetUserByID ...
+func (u *UserHandler) GetUserByID(c echo.Context) error {
+	id, _ := uuid.Parse(c.Param("id"))
 
-// 	return c.String(http.StatusOK, id)
-// }
+	user, err := u.repo.GetByID(c.Request().Context(), id)
 
-// // AddUser new user
-// func (u *UserHandler) AddUser(c echo.Context) error {
-// 	u := new(models.UserRequest)
-// 	if err := c.Bind(u); err != nil {
-// 		return err
-// 	}
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
 
-// 	return c.JSON(http.StatusCreated, u)
-// 	// or
-// 	// return c.XML(http.StatusCreated, u)
-// }
+	return c.JSON(http.StatusOK, user)
+}
+
+// AddUser new user
+func (u *UserHandler) AddUser(c echo.Context) error {
+	payload := new(entities.User)
+	if err := c.Bind(payload); err != nil {
+		return err
+	}
+
+	payload.Id = uuid.New()
+
+	user, err := u.repo.Create(c.Request().Context(), payload)
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusCreated, user)
+}

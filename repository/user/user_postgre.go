@@ -4,22 +4,23 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/google/uuid"
 	models "github.com/rdyc/go-echo/entities"
 	pRepo "github.com/rdyc/go-echo/repository"
 )
 
-// NewSQLPostRepo retunrs implement of post repository interface
-func NewSQLPostRepo(Conn *sql.DB) pRepo.UserRepo {
-	return &mysqlPostRepo{
+// NewSQLUserRepo retunrs implement of post repository interface
+func NewSQLUserRepo(Conn *sql.DB) pRepo.UserRepo {
+	return &postgreUserRepo{
 		Conn: Conn,
 	}
 }
 
-type mysqlPostRepo struct {
+type postgreUserRepo struct {
 	Conn *sql.DB
 }
 
-func (m *mysqlPostRepo) fetch(ctx context.Context, query string, args ...interface{}) ([]*models.User, error) {
+func (m *postgreUserRepo) fetch(ctx context.Context, query string, args ...interface{}) ([]*models.User, error) {
 	rows, err := m.Conn.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -43,14 +44,14 @@ func (m *mysqlPostRepo) fetch(ctx context.Context, query string, args ...interfa
 	return payload, nil
 }
 
-func (m *mysqlPostRepo) Fetch(ctx context.Context, num int64) ([]*models.User, error) {
+func (m *postgreUserRepo) Fetch(ctx context.Context, num int64) ([]*models.User, error) {
 	query := `select "Id", "UserName", "Email" from "Users" limit $1;`
 
 	return m.fetch(ctx, query, num)
 }
 
-func (m *mysqlPostRepo) GetByID(ctx context.Context, id int64) (*models.User, error) {
-	query := "Select id, title, content From posts where id=?"
+func (m *postgreUserRepo) GetByID(ctx context.Context, id uuid.UUID) (*models.User, error) {
+	query := `select "Id", "UserName", "Email" from "Users" where "Id"=$1`
 
 	rows, err := m.fetch(ctx, query, id)
 	if err != nil {
@@ -67,26 +68,26 @@ func (m *mysqlPostRepo) GetByID(ctx context.Context, id int64) (*models.User, er
 	return payload, nil
 }
 
-func (m *mysqlPostRepo) Create(ctx context.Context, p *models.User) (int64, error) {
-	query := "Insert posts SET title=?, content=?"
+func (m *postgreUserRepo) Create(ctx context.Context, p *models.User) (uuid.UUID, error) {
+	query := `insert into "Users" values ($1, $2, $3)`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
-		return -1, err
+		return uuid.Nil, err
 	}
 
-	res, err := stmt.ExecContext(ctx, p.UserName)
+	_, err = stmt.ExecContext(ctx, p.Id, p.UserName, p.Email)
 	defer stmt.Close()
 
 	if err != nil {
-		return -1, err
+		return p.Id, err
 	}
 
-	return res.LastInsertId()
+	return uuid.Nil, nil
 }
 
-func (m *mysqlPostRepo) Update(ctx context.Context, p *models.User) (*models.User, error) {
-	query := "Update posts set title=?, content=? where id=?"
+func (m *postgreUserRepo) Update(ctx context.Context, p *models.User) (*models.User, error) {
+	query := `update "Users" set "UserName"=$2, "Email"=$3 where "Id"=$1`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {
@@ -94,8 +95,9 @@ func (m *mysqlPostRepo) Update(ctx context.Context, p *models.User) (*models.Use
 	}
 	_, err = stmt.ExecContext(
 		ctx,
-		p.UserName,
 		p.Id,
+		p.UserName,
+		p.Email,
 	)
 	if err != nil {
 		return nil, err
@@ -105,8 +107,8 @@ func (m *mysqlPostRepo) Update(ctx context.Context, p *models.User) (*models.Use
 	return p, nil
 }
 
-func (m *mysqlPostRepo) Delete(ctx context.Context, id int64) (bool, error) {
-	query := "Delete From posts Where id=?"
+func (m *postgreUserRepo) Delete(ctx context.Context, id uuid.UUID) (bool, error) {
+	query := `delete from "Users" where "Id"=$1`
 
 	stmt, err := m.Conn.PrepareContext(ctx, query)
 	if err != nil {

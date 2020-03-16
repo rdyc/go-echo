@@ -10,7 +10,9 @@ import (
 func UserRouter(g *echo.Group, db *driver.DB) {
 	handler := handlers.NewUserHandler(db)
 
-	g.GET("/users", handler.GetUserAll)
-	// g.GET("/users/:id", pHandler.GetUserByID)
-	// g.POST("/users", pHandler.AddUser)
+	v1 := g.Group("/v1")
+
+	v1.GET("/users", handler.GetUserAll)
+	v1.GET("/users/:id", handler.GetUserByID)
+	v1.POST("/users", handler.AddUser)
 }

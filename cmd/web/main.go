@@ -52,7 +52,7 @@ func main() {
 	e.Static("/assets", cfg.BasePath+"public/assets")
 
 	// api group
-	v1 := e.Group("/api/v1")
+	v1 := e.Group("/api")
 
 	// register routers with group
 	routers.UserRouter(v1, db)
