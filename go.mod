@@ -3,7 +3,9 @@ module github.com/rdyc/go-echo
 go 1.13
 
 require (
+	github.com/ahmetb/go-linq v3.0.0+incompatible
 	github.com/ahmetb/go-linq/v3 v3.1.0 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/google/uuid v1.1.1
 	github.com/labstack/echo v3.3.10+incompatible

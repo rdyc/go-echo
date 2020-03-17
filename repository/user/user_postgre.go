@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	models "github.com/rdyc/go-echo/entities"
 	pRepo "github.com/rdyc/go-echo/repository"
+
+	. "github.com/ahmetb/go-linq"
 )
 
 // NewSQLUserRepo retunrs implement of post repository interface
@@ -41,6 +43,14 @@ func (m *postgreUserRepo) fetch(ctx context.Context, query string, args ...inter
 		}
 		payload = append(payload, data)
 	}
+
+	var emails []string
+	From(payload).Where(func(c interface{}) bool {
+		return c.(*models.User).UserName != ""
+	}).Select(func(c interface{}) interface{} {
+		return c.(*models.User).Email
+	}).ToSlice(&emails)
+
 	return payload, nil
 }
 
