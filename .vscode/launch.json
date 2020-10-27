@@ -12,11 +12,11 @@
             "program": "${workspaceFolder}/cmd/web/main.go",
             "env": {
                 "PORT": 4000,
-                "DB_HOST": "localhost",
+                "DB_HOST": "xdev.equine.co.id",
                 "DB_PORT": "5432",
-                "DB_USER": "appuser",
+                "DB_USER": "app_user",
                 "DB_PASS": "P@ssw0rd!",
-                "DB_NAME": "IdentityServer4Admin"
+                "DB_NAME": "Identity"
             },
             "args": [
                 "-base-path=../../"
